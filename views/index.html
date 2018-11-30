@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>ToDO</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+ <script >
+  app = angular.module('app', []);
+
+app.controller('getController', ($scope, $http, $location) =>{
+	$scope.getAllUsers = function(){
+		var url = "/todos";
+		
+		$http.get(url).then((response) => {
+			$scope.todos = response.data;
+		}, (response) => {
+			$scope.getErrMsg = "Error Status: " +  response.statusText;
+		});
+	}
+	
+	
+	
+});
+ app.controller('postController', ($scope, $http, $location) => {
+	$scope.submitAddForm = function(){
+		var url = "/todos";
+		
+		var config = {
+                headers : {
+                    'Accept': 'application/json'
+                }
+        }
+		var data = {
+            name: $scope.itemname,
+            note: $scope.note
+        };
+		
+		
+		$http.post(url, JSON.stringify(data), config).then((response) => {
+			$scope.todos= response.data;
+		}, (response) => {
+			$scope.postErrMsg = "Error Status: " +  response.statusText;
+		});
+		
+		// reset data fields
+		$scope.itemname = "";
+		$scope.note = "";
+	}	
+});
+ 
+ </script>
+</head>
+ 
+<body > 
+<div class="container" ng-app="app"> 
+<div class="col-sm-4">
+	<h3>TO DO</h3>
+	
+	<br>
+	<div ng-controller="getController">
+		<button ng-click="getAllUsers()" type="button" class="btn btn-default">get all my items</button>
+		<ul>
+			<li ng-repeat="todo in todos">{{todo.name + " " + todo.status}}</li>
+		</ul>
+		<div>{{getErrMsg}}</div>
+
+		<br>
+	</div>
+	<div ng-controller="postController">
+		
+		<div>		
+			<form name="addForm" ng-submit="submitAddForm()">
+			  <div class="form-group">
+				<label for="name">Name:</label>
+				<input ng-model="itemname" type="text" class="form-control" id="itemname" placeholder="Enter Item Name"/>
+			  </div>
+			  <div class="form-group">
+				<label for="Note">Note:</label>
+				<input ng-model="note" type="text" class="form-control" id="note" placeholder="Enter Notes"/>
+			  </div>
+			  <button type="submit" class="btn btn-default">Submit</button>
+			</form>
+		</div>
+	</div>
+	
+</div>	
+</div>
+</body>
+</html>
